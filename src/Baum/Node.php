@@ -497,6 +497,17 @@ abstract class Node extends Model
     }
 
     /**
+    * Pass it a nested array of ID's to re-order the tree in the DB.
+    *
+    * @param   array|\Illuminate\Support\Contracts\ArrayableInterface
+    * @return  boolean
+    */
+    public static function rebuildTree($nodeList)
+    {
+        return with(new static)->updateTree($nodeList);
+    }
+
+    /**
      * Query scope which extracts a certain node object from the current query
      * expression.
      *
@@ -894,7 +905,7 @@ abstract class Node extends Model
 
         return $this->computeLevel();
     }
-    
+
     /**
     * Returns true if node is a direct descendant of $other.
     *
@@ -1375,6 +1386,21 @@ abstract class Node extends Model
         $mapper = new SetMapper($this);
 
         return $mapper->map($nodeList);
+    }
+
+    /**
+    * Maps the provided tree structure into the database using the current node
+    * as the parent. The provided tree structure will be inserted/updated as the
+    * descendancy subtree of the current node instance.
+    *
+    * @param   array|\Illuminate\Support\Contracts\ArrayableInterface
+    * @return  boolean
+    */
+    public function updateTree($nodeList)
+    {
+        $mapper = new SetMapper($this);
+
+        return $mapper->updateMap($nodeList);
     }
 
     /**
