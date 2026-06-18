@@ -128,6 +128,10 @@ abstract class Model extends BaseModel
    */
   public static function softDeletesEnabled()
   {
-      return with(new static())->areSoftDeletesEnabled();
+      // Avoid instantiating the model (new static()) here: this method is
+      // called from boot(), and Laravel 13 throws a LogicException when a
+      // model is instantiated while it is still booting. hasGlobalScope is
+      // static and resolves the same result without an instance.
+      return static::hasGlobalScope(SoftDeletingScope::class);
   }
 }
